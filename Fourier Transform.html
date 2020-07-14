@@ -54,21 +54,19 @@ console.log("Correcting for " + averagey);
 for (var i = 0; i < wave.length; i++) {
   averagewave[i] = wave[i];
 }
-//Map into wound state coordinates
 //wind point after point around center and average x and y of all. Then Write the sqrt(x²+y²) of the average from every wounding state to the fourierwave list.
-let windingsstart = 0;
-let windingsend = 100;
+let windingsstart = -10;
+let windingsend = 1000;
 
 let windings = windingsend-windingsstart;
-let windingsincrease = averagewave.length/windings
 for (var i = 0; i < averagewave.length + 1; i++) {
-   currentwinding = i/windingsincrease;
+   currentwinding = windings/averagewave.length*i;
    console.log(currentwinding);
    let centerpointx = 0;
    let centerpointy = 0;
    for (var point = 0; point < averagewave.length; point++) {
-     centerpointx += averagewave[point]*Math.sin(currentwinding/averagewave.length*point);
-     centerpointy += averagewave[point]*Math.cos(currentwinding/averagewave.length*point);
+     centerpointx += averagewave[point]*Math.sin(windingsstart+currentwinding/averagewave.length*point);
+     centerpointy += averagewave[point]*Math.cos(windingsstart+currentwinding/averagewave.length*point);
    }
    console.log(Math.sqrt(centerpointx*centerpointx+centerpointy*centerpointy));
    fourierwave[i] = Math.sqrt(centerpointx*centerpointx+centerpointy*centerpointy)/100
@@ -99,3 +97,4 @@ ctx.closePath();
     </script>
   </body>
 </html>
+
