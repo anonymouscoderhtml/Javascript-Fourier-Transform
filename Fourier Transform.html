@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Graph Drawing</title>
+    <style media="screen">
+      body {
+        background-color: rgb(0, 0, 0);
+        margin: 0;
+        padding: 0;
+      }
+      #canvas {
+        border:1px solid rgb(0, 0, 0);
+        margin: 0;
+        padding: 0;
+        background-color: rgb(0, 0, 0);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+let c = document.getElementById('canvas');
+canvas.width = window.innerWidth-6;
+canvas.height = window.innerHeight-6;
+let ctx = c.getContext('2d');
+ctx.strokeStyle = "rgb(255,255,255)";
+
+wave = [];
+wave.length = canvas.width;
+wave.fill(0);
+
+averagewave = [];
+averagewave.length = wave.length;
+averagewave.fill(0);
+
+fourierwave = [];
+fourierwave.length = wave.length;
+fourierwave.fill(0);
+////////////////////////////////////////////////////////////////////////////////
+for (var i = 0; i < canvas.width; i++) {
+  let counter = 40*Math.sin(i/20);
+  wave[i] = counter;
+}
+////////////////////////////////////////////////////////////////////////////////
+//Integral
+let integral = 0;
+for (var i = 0; i < wave.length; i++) {
+  integral += wave[i];
+}
+console.log("The Integral is " + integral);
+let averagey = integral/wave.length;
+console.log("Correcting for " + averagey);
+for (var i = 0; i < wave.length; i++) {
+  averagewave[i] = wave[i];
+}
+//Map into wound state coordinates
+//wind point after point around center and average x and y of all. Then Write the sqrt(x²+y²) of the average from every wounding state to the fourierwave list.
+let windingsstart = 0;
+let windingsend = 100;
+
+let windings = windingsend-windingsstart;
+let windingsincrease = averagewave.length/windings
+for (var i = 0; i < averagewave.length + 1; i++) {
+   currentwinding = i/windingsincrease;
+   console.log(currentwinding);
+   let centerpointx = 0;
+   let centerpointy = 0;
+   for (var point = 0; point < averagewave.length; point++) {
+     centerpointx += averagewave[point]*Math.sin(currentwinding/averagewave.length*point);
+     centerpointy += averagewave[point]*Math.cos(currentwinding/averagewave.length*point);
+   }
+   console.log(Math.sqrt(centerpointx*centerpointx+centerpointy*centerpointy));
+   fourierwave[i] = Math.sqrt(centerpointx*centerpointx+centerpointy*centerpointy)/100
+
+}
+console.log("Fourier Transform Completed");
+
+////////////////////////////////////////////////////////////////////////////////
+//Draw the two waves (raw input wave and fourier transform output)
+ctx.beginPath();
+for (let x = 1; x < canvas.width+1; x++) {
+   ctx.moveTo(x, -wave[x]+canvas.height/4);
+   ctx.lineTo(x+1, -wave[x+1]+canvas.height/4);
+}
+console.log("Input Wave Drawn");
+for (let x = 1; x < canvas.width+1; x++) {
+   ctx.moveTo(x, -fourierwave[x]+3*canvas.height/4);
+   ctx.lineTo(x+1, -fourierwave[x+1]+3*canvas.height/4);
+}
+console.log("Frequency Wave Drawn");
+ctx.stroke();
+ctx.closePath();
+
+
+
+
+
+    </script>
+  </body>
+</html>
